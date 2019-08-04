@@ -53,13 +53,13 @@ unsigned char active_team = 0;
 
 BluetoothSerial bts;
 String  bts_rx;
-char bts_rx_buffer[16];
-int bts_index = 0;
+char    rx_val;
+
 
 
 //Global
 //------------------------------------------------------------------//
-
+void bluetooth_rx(void);
 
 
 //Setup
@@ -87,12 +87,15 @@ void setup()
 
 //Main
 //------------------------------------------------------------------//
-
 void loop()
 {
+    bluetooth_rx();
 
     switch ( pattern ) {
     case 0:
+        break;
+
+    case 1:
         button1_status = digitalRead( BUTTON1_PIN );
         button2_status = digitalRead( BUTTON2_PIN );
         button3_status = digitalRead( BUTTON3_PIN );
@@ -163,7 +166,7 @@ void loop()
     case 61:
         if( TF_flag ) {
             for(int i=0; i<=5; i++) {
-                strip.ClearTo( blue, 4 * active_team - 4, 4 * active_team - 1);
+                strip.ClearTo( red, 4 * active_team - 4, 4 * active_team - 1);
                 strip.Show();
                 delay(100);
                 strip.ClearTo( 0, 4 * active_team - 4, 4 * active_team - 1);
@@ -172,7 +175,7 @@ void loop()
             }
         } else {
             for(int i=0; i<=5; i++) {
-                strip.ClearTo( red, 4 * active_team - 4, 4 * active_team - 1);
+                strip.ClearTo(blue, 4 * active_team - 4, 4 * active_team - 1);
                 strip.Show();
                 delay(100);
                 strip.ClearTo( 0, 4 * active_team - 4, 4 * active_team - 1);
@@ -195,4 +198,39 @@ void loop()
 
 
 
+}
+
+
+// Bluetooth RX
+//------------------------------------------------------------------//
+void bluetooth_rx(void) {
+
+  while (bts.available() > 0) {
+    rx_val = bts.read();
+      
+    switch ( rx_val ) {
+    case 'I':
+        if(pattern == 51) {
+            TF_flag = 1;
+            pattern = 61;
+        }
+        break;
+
+    case 'J':
+        if(pattern == 51) {
+            TF_flag = 0;
+            pattern = 61;
+        }
+        break;
+
+    case 'K':
+        pattern = 71;
+        break;
+
+    case 'Z':
+        pattern = 1;
+        break;
+    
+    }
+  }
 }
