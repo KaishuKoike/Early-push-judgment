@@ -2,6 +2,7 @@
 //------------------------------------------------------------------//
 #include <M5Stack.h>
 #include <NeoPixelBus.h>
+#include "BluetoothSerial.h"
 
 
 
@@ -50,6 +51,11 @@ boolean TF_flag = 0;
 unsigned char pattern = 0;
 unsigned char active_team = 0;
 
+BluetoothSerial bts;
+String  bts_rx;
+char bts_rx_buffer[16];
+int bts_index = 0;
+
 
 //Global
 //------------------------------------------------------------------//
@@ -60,9 +66,11 @@ unsigned char active_team = 0;
 //------------------------------------------------------------------//
 void setup()
 {
+    bts.begin("M5Stack");
 
     //M5.begin();
     // this resets all the neopixels to an off state
+
     strip.Begin();
     strip.Show();
 
@@ -101,6 +109,7 @@ void loop()
         break;
 
     case 11:
+        bts.print("a");
         strip.ClearTo( pink, 0, 3);
         strip.Show();
         active_team = 1;
@@ -108,6 +117,7 @@ void loop()
         break;
 
     case 21:
+        bts.print("b");
         strip.ClearTo( aqua, 4, 7);
         strip.Show();
         active_team = 2;
@@ -115,6 +125,7 @@ void loop()
         break;
 
     case 31:
+        bts.print("c");
         strip.ClearTo( green, 8, 11);
         strip.Show();
         active_team = 3;
@@ -122,6 +133,7 @@ void loop()
         break;
 
     case 41:
+        bts.print("d");
         strip.ClearTo( yellow, 12, 15);
         strip.Show();
         active_team = 4;
@@ -133,14 +145,17 @@ void loop()
         buttonB_status = digitalRead( BUTTON_B_PIN );
         buttonC_status = digitalRead( BUTTON_C_PIN );
         if ( buttonA_status == 0 ) {
+            bts.print("i");
             TF_flag = 1;
             pattern = 61;
             break;
         } else if ( buttonB_status == 0 ) {
+            bts.print("j");
             TF_flag = 0;
             pattern = 61;
             break;
         } else if ( buttonC_status == 0 ) {
+            bts.print("k");
             pattern = 71;
         }
         break;
